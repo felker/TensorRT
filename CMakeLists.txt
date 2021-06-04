@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+add_compile_definitions(THRUST_IGNORE_CUB_VERSION_CHECK)
+
+
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 include(cmake/modules/set_ifndef.cmake)
 include(cmake/modules/find_library_create_target.cmake)
