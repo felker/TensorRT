@@ -38,6 +38,7 @@ set(OPENSOURCE_SAMPLES_LIST
     sampleUffSSD
     sampleOnnxMnistCoordConvAC
     trtexec
+    FRNN
 )
 
 foreach(SAMPLE_ITER ${OPENSOURCE_SAMPLES_LIST})
