@@ -171,6 +171,10 @@ bool FRNN::constructNetwork(SampleUniquePtr<nvinfer1::IBuilder>& builder,
         return false;
     }
 
+    // KGF: despite README's instructions, this function is not implemented
+    // parser->reportParsingInfo();
+
+
     config->setMaxWorkspaceSize(1024_MiB);//16_MiB);
     if (mParams.fp16)
     {
@@ -257,7 +261,8 @@ bool FRNN::processInput(const samplesCommon::BufferManager& buffers)
     // sample::gLogInfo << std::endl;
 
     float* hostDataBuffer = static_cast<float*>(buffers.getHostBuffer(mParams.inputTensorNames[0]));
-    for (int i = 0; i < input1; i++)
+    // KGF: is input0, batch size, automatically ignored when the data buffers are allocated?
+    for (int i = 0; i < input1*input2; i++)
     {
       hostDataBuffer[i] = 1.0;
         // hostDataBuffer[i] = 1.0 - float(fileData[i] / 255.0);
@@ -273,20 +278,23 @@ bool FRNN::processInput(const samplesCommon::BufferManager& buffers)
 //!
 bool FRNN::verifyOutput(const samplesCommon::BufferManager& buffers)
 {
+  // KGF: same question as above: is d[0] (batch size) implicitly ignored, or assumed to
+  // be 1?
     const int outputSize = mOutputDims.d[1];
+    // 256, 128, 1
     sample::gLogInfo << "Output dims: output0,output1,output2 = " << mOutputDims.d[0] << "," << mOutputDims.d[1] << "," << mOutputDims.d[2] << std::endl;
 
     float* output = static_cast<float*>(buffers.getHostBuffer(mParams.outputTensorNames[0]));
-    float val{0.0f};
-    int idx{0};
+    // float val{0.0f};
+    // int idx{0};
 
-    // Calculate Softmax
-    float sum{0.0f};
-    for (int i = 0; i < outputSize; i++)
-    {
-        output[i] = exp(output[i]);
-        sum += output[i];
-    }
+    // // Calculate Softmax
+    // float sum{0.0f};
+    // for (int i = 0; i < outputSize; i++)
+    // {
+    //     output[i] = exp(output[i]);
+    //     sum += output[i];
+    // }
 
     sample::gLogInfo << "Output:" << std::endl;
     for (int i = 0; i < outputSize; i++)
@@ -306,7 +314,7 @@ bool FRNN::verifyOutput(const samplesCommon::BufferManager& buffers)
 
     sample::gLogInfo << std::endl;
 
-    return idx == mNumber && val > 0.9f;
+    return true; // idx == mNumber && val > 0.9f;
 }
 
 //!
